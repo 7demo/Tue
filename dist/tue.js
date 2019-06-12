@@ -1,7 +1,15 @@
-'use strict';
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global = global || self, global.Tue = factory());
+}(this, function () { 'use strict';
 
-const Tue = (options) => {
-	console.log(options);
-};
+	class Tue {
+		constructor(options) {
+			console.log(options);
+		}
+	}
 
-module.exports = Tue;
+	return Tue;
+
+}));

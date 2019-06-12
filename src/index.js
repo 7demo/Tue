@@ -1,5 +1,8 @@
-const Tue = (options) => {
-	console.log(options)
+
+class Tue {
+	constructor(options) {
+		console.log(options)
+	}
 }
 
 export default Tue
