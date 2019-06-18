@@ -7,4 +7,8 @@ class Tue {
 }
 init(Tue)
 
+Tue.prototype.$mount = (el) => {
+	
+}
+
 export default Tue
