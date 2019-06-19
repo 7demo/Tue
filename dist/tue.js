@@ -35,22 +35,40 @@
 		return new Observer(data)
 	};
 
+	// 作为代理拦截
+	// 实现 this.msg 即为 this.data.msg
+	const proxy = (tm, data) => {
+		Object.keys(data).map(key => {
+			Object.defineProperty(tm, key, {
+				set(val) {
+					tm.data[key] = val;
+				},
+				get() {
+					return tm.data[key]
+				}
+			});
+		});
+		
+	};
+
 	const initMixin = (Tue) => {
-		// console.log(Tue, typeof Tue)
-		Tue.prototype.init  = (options) => {
-			console.log(1111, undefined);
+		console.log(undefined);
+		Tue.prototype._init = function (options) {
 			// 初始化数据，建立发布订阅模式
-			const data = undefined.data = options.data || {};
+			const tm = this;
+			const data = tm.data = options.data || {};
 			observer(data);
+			proxy(tm, data);
 		};
 	};
 
 	class Tue {
 		constructor(options) {
 			console.log(options, this);
-			this.init(options);
+			this._init(options);
 		}
 	}
+
 	initMixin(Tue);
 
 	return Tue;
