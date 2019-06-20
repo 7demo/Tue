@@ -1,3 +1,6 @@
+import {Dep} from './dep.js'
+
+
 class Observer{
 	constructor(data) {
 		console.log(data)
@@ -15,11 +18,14 @@ class Observer{
 }
 
 export const defineReactive = (obj, key, val) => {
+	let dep = new Dep()
 	Object.defineProperty(obj, key, {
 		set(newValue) {
 			val = newValue
+			dep.notify()
 		},
 		get() {
+			Dep.target && dep.addSub(Dep.target)
 			return val
 		}
 	})

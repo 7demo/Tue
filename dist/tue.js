@@ -4,6 +4,21 @@
 	(global = global || self, global.Tue = factory());
 }(this, function () { 'use strict';
 
+	class Dep {
+		constructor() {
+			this.subs = [];
+		}
+		addSub(sub) {
+			console.log(32323, sub);
+			this.subs.push(sub);
+		}
+		notify() {
+			this.subs.map(sub => sub.update());
+		}
+	}
+
+	Dep.target = null;
+
 	class Observer{
 		constructor(data) {
 			console.log(data);
@@ -21,11 +36,14 @@
 	}
 
 	const defineReactive = (obj, key, val) => {
+		let dep = new Dep();
 		Object.defineProperty(obj, key, {
 			set(newValue) {
 				val = newValue;
+				dep.notify();
 			},
 			get() {
+				Dep.target && dep.addSub(Dep.target);
 				return val
 			}
 		});
@@ -51,10 +69,35 @@
 		
 	};
 
+	class Watcher{
+		constructor(tm, exp, cb) {
+			this.tm = tm;
+			this.exp = exp;
+			this.cb = cb;
+			this.get();
+		}
+		get() {
+			Dep.target = this;
+			let arr = this.exp.split('.');
+			let val = this.tm;
+			arr.map(item => {
+				val = val[item];
+			});
+			Dep.target = null;
+		}
+		update() {
+			let arr = this.exp.split('.');
+			let val = this.tm;
+			arr.map(item => {
+				val = val[item];
+			});
+			this.cb(val);
+		}
+	}
+
 	/**
 	 * 编译模板
 	 */
-
 	class Compile {
 		constructor(el, tm) {
 			this.tm = tm;
@@ -77,7 +120,10 @@
 					arr.map(item => {
 						val = val[item];
 					});
-					node.textContent = node.textContent.replace(reg, val).trim();
+					node.textContent = txt.replace(reg, val).trim();
+					new Watcher(this.tm, RegExp.$1, v => {
+						node.textContent = txt.replace(reg, v).trim();
+					});
 				}
 				if (node.childNodes && node.childNodes.length) {
 					this.replace(node);
@@ -92,7 +138,7 @@
 		Tue.prototype._init = function (options) {
 			const tm = this;
 			const data = tm.data = options.data || {};
-			// 初始化数据，建立发布订阅模式
+			// 初始化数据，拦截set与get操作
 			observer(data);
 			proxy(tm, data);
 

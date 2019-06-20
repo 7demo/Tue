@@ -6,7 +6,7 @@ export const initMixin = (Tue) => {
 	Tue.prototype._init = function (options) {
 		const tm = this
 		const data = tm.data = options.data || {}
-		// 初始化数据，建立发布订阅模式
+		// 初始化数据，拦截set与get操作
 		observer(data)
 		proxy(tm, data)
 

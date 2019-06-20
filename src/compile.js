@@ -1,7 +1,7 @@
 /**
  * 编译模板
  */
-
+import {Watcher} from './watcher.js'
 export class Compile {
 	constructor(el, tm) {
 		this.tm = tm
@@ -24,7 +24,10 @@ export class Compile {
 				arr.map(item => {
 					val = val[item]
 				})
-				node.textContent = node.textContent.replace(reg, val).trim()
+				node.textContent = txt.replace(reg, val).trim()
+				new Watcher(this.tm, RegExp.$1, v => {
+					node.textContent = txt.replace(reg, v).trim()
+				})
 			}
 			if (node.childNodes && node.childNodes.length) {
 				this.replace(node)
