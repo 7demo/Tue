@@ -3,7 +3,6 @@ export class Dep {
 		this.subs = []
 	}
 	addSub(sub) {
-		console.log(32323, sub)
 		this.subs.push(sub)
 	}
 	notify() {

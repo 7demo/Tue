@@ -35,13 +35,26 @@ export class Compile {
 					let name = attr.name
 					let exp = attr.value
 					if (name.includes('v-')) {
-						node.value = this.tm[exp]
+						let val = this.tm
+						let arr = RegExp.$1.split('.')
+						arr.map(item => {
+							val = val[item]
+						})
+						node.value = val
 						new Watcher(this.tm, exp, v => {
 							node.value = v
 						})
 						node.addEventListener('input', e => {
 							let nc = e.target.value
-							this.tm[exp] = nc
+							let arr = exp.split('.')
+							let val = this.tm
+							arr.map(item => {
+								if (arr[arr.length - 1] === item) {
+									val[item] = nc
+									return
+								}
+								val = val[item]
+							})
 						})
 					}
 				})

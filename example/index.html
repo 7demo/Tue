@@ -12,13 +12,20 @@
 		<span>
 			{{atr}}
 		</span>
+		<div>
+			{{obj.a}}
+		</div>
+		<input type="text" v-model="obj.a">
 	</div>
 	<script>
 		let tue = new Tue({
 			el: '#app',
 			data: {
 				msg: 'test',
-				atr: 'pro123'
+				atr: 'pro123',
+				obj: {
+					a: 'this is a deep'
+				}
 			}
 		})
 	</script>

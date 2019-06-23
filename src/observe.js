@@ -3,7 +3,6 @@ import {Dep} from './dep.js'
 
 class Observer{
 	constructor(data) {
-		console.log(data)
 		this.walk(data)
 	}
 
@@ -48,5 +47,4 @@ export const proxy = (tm, data) => {
 			}
 		})
 	})
-	
 }

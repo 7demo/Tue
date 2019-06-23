@@ -2,7 +2,6 @@ import { observer, proxy } from './observe.js'
 import {Compile} from './compile'
 
 export const initMixin = (Tue) => {
-	console.log(this)
 	Tue.prototype._init = function (options) {
 		const tm = this
 		const data = tm.data = options.data || {}
