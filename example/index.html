@@ -16,6 +16,7 @@
 			{{obj.a}}
 		</div>
 		<input type="text" v-model="obj.a">
+		{{sum}}
 	</div>
 	<script>
 		let tue = new Tue({
@@ -25,6 +26,12 @@
 				atr: 'pro123',
 				obj: {
 					a: 'this is a deep'
+				}
+			},
+			computed: {
+				sum() {
+					console.log('computed---->', this.msg + this.atr)
+					return this.msg + this.atr
 				}
 			}
 		})
