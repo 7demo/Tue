@@ -20,6 +20,8 @@
 
 	class Observer{
 		constructor(data) {
+			let dep = new Dep();
+			this.dep = dep;
 			this.walk(data);
 		}
 
@@ -28,13 +30,15 @@
 				if (typeof data[key] === 'object') {
 					this.walk(data[key]);
 				}
-				defineReactive(data, key, data[key]);
+				defineReactive(data, key, data[key], this.dep);
+				if (Array.isArray(data[key])) {
+					defineArrayReactive(data, key, this.dep);
+				}
 			});
 		}
 	}
 
-	const defineReactive = (obj, key, val) => {
-		let dep = new Dep();
+	const defineReactive = (obj, key, val, dep) => {
 		Object.defineProperty(obj, key, {
 			set(newValue) {
 				val = newValue;
@@ -45,6 +49,25 @@
 				return val
 			}
 		});
+	};
+
+	const defineArrayReactive = (obj, key, dep) => {
+		let arrayProto = Array.prototype;
+		let arrayMethods = Object.create(arrayProto);
+		[
+			'push',
+			'pop'
+		].map(item => {
+			Object.defineProperty(arrayMethods, item, {
+				value: function(...arg) {
+					const original = arrayProto[item];
+					let args = Array.from(arguments);
+					original.apply(this, args);
+					dep.notify();
+				}
+			});
+		});
+		obj[key].__proto__ = arrayMethods;
 	};
 
 	const observer = (data) => {

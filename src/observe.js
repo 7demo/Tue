@@ -3,6 +3,8 @@ import {Dep} from './dep.js'
 
 class Observer{
 	constructor(data) {
+		let dep = new Dep()
+		this.dep = dep
 		this.walk(data)
 	}
 
@@ -11,13 +13,15 @@ class Observer{
 			if (typeof data[key] === 'object') {
 				this.walk(data[key])
 			}
-			defineReactive(data, key, data[key])
+			defineReactive(data, key, data[key], this.dep)
+			if (Array.isArray(data[key])) {
+				defineArrayReactive(data, key, this.dep)
+			}
 		})
 	}
 }
 
-export const defineReactive = (obj, key, val) => {
-	let dep = new Dep()
+export const defineReactive = (obj, key, val, dep) => {
 	Object.defineProperty(obj, key, {
 		set(newValue) {
 			val = newValue
@@ -28,6 +32,25 @@ export const defineReactive = (obj, key, val) => {
 			return val
 		}
 	})
+}
+
+export const defineArrayReactive = (obj, key, dep) => {
+	let arrayProto = Array.prototype
+	let arrayMethods = Object.create(arrayProto);
+	[
+		'push',
+		'pop'
+	].map(item => {
+		Object.defineProperty(arrayMethods, item, {
+			value: function(...arg) {
+				const original = arrayProto[item]
+				let args = Array.from(arguments)
+				original.apply(this, args)
+				dep.notify()
+			}
+		})
+	})
+	obj[key].__proto__ = arrayMethods
 }
 
 export const observer = (data) => {
