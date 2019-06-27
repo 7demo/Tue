@@ -2,9 +2,10 @@ import {Dep} from './dep.js'
 
 
 class Observer{
-	constructor(data) {
+	constructor(data, tm) {
 		let dep = new Dep()
 		this.dep = dep
+		this.tm = tm
 		this.walk(data)
 	}
 
@@ -13,19 +14,21 @@ class Observer{
 			if (typeof data[key] === 'object') {
 				this.walk(data[key])
 			}
-			defineReactive(data, key, data[key], this.dep)
+			defineReactive(data, key, data[key], this.dep, this.tm)
 			if (Array.isArray(data[key])) {
-				defineArrayReactive(data, key, this.dep)
+				defineArrayReactive(data, key, this.dep, this.tm)
 			}
 		})
 	}
 }
 
-export const defineReactive = (obj, key, val, dep) => {
+export const defineReactive = (obj, key, val, dep, tm) => {
 	Object.defineProperty(obj, key, {
 		set(newValue) {
+			let oval = tm[key]
 			val = newValue
 			dep.notify()
+			tm.$watch[key] && tm.$watch[key](newValue, oval)
 		},
 		get() {
 			Dep.target && dep.addSub(Dep.target)
@@ -34,7 +37,7 @@ export const defineReactive = (obj, key, val, dep) => {
 	})
 }
 
-export const defineArrayReactive = (obj, key, dep) => {
+export const defineArrayReactive = (obj, key, dep, tm) => {
 	let arrayProto = Array.prototype
 	let arrayMethods = Object.create(arrayProto);
 	[
@@ -53,8 +56,8 @@ export const defineArrayReactive = (obj, key, dep) => {
 	obj[key].__proto__ = arrayMethods
 }
 
-export const observer = (data) => {
-	return new Observer(data)
+export const observer = (data, tm) => {
+	return new Observer(data, tm)
 }
 
 // 作为代理拦截

@@ -36,7 +36,7 @@ export class Compile {
 					let exp = attr.value
 					if (name.includes('v-')) {
 						let val = this.tm
-						let arr = RegExp.$1.split('.')
+						let arr = exp.split('.')
 						arr.map(item => {
 							val = val[item]
 						})

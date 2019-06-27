@@ -25,7 +25,7 @@
 		let tue = new Tue({
 			el: '#app',
 			data: {
-				msg: 'test',
+				msg: 'test2323',
 				atr: 'pro123',
 				arr: [
 					1,
@@ -39,6 +39,14 @@
 				sum() {
 					console.log('computed---->', this.msg + this.atr)
 					return this.msg + this.atr
+				}
+			},
+			watch: {
+				msg(nv, ol) {
+					console.log('msg----> ', nv, ol)
+				},
+				obj(nv, ol) {
+					console.log('obj===> ', nv, ol)
 				}
 			}
 		})

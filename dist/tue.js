@@ -19,9 +19,10 @@
 	Dep.target = null;
 
 	class Observer{
-		constructor(data) {
+		constructor(data, tm) {
 			let dep = new Dep();
 			this.dep = dep;
+			this.tm = tm;
 			this.walk(data);
 		}
 
@@ -30,19 +31,21 @@
 				if (typeof data[key] === 'object') {
 					this.walk(data[key]);
 				}
-				defineReactive(data, key, data[key], this.dep);
+				defineReactive(data, key, data[key], this.dep, this.tm);
 				if (Array.isArray(data[key])) {
-					defineArrayReactive(data, key, this.dep);
+					defineArrayReactive(data, key, this.dep, this.tm);
 				}
 			});
 		}
 	}
 
-	const defineReactive = (obj, key, val, dep) => {
+	const defineReactive = (obj, key, val, dep, tm) => {
 		Object.defineProperty(obj, key, {
 			set(newValue) {
+				let oval = tm[key];
 				val = newValue;
 				dep.notify();
+				tm.$watch[key] && tm.$watch[key](newValue, oval);
 			},
 			get() {
 				Dep.target && dep.addSub(Dep.target);
@@ -51,7 +54,7 @@
 		});
 	};
 
-	const defineArrayReactive = (obj, key, dep) => {
+	const defineArrayReactive = (obj, key, dep, tm) => {
 		let arrayProto = Array.prototype;
 		let arrayMethods = Object.create(arrayProto);
 		[
@@ -70,8 +73,8 @@
 		obj[key].__proto__ = arrayMethods;
 	};
 
-	const observer = (data) => {
-		return new Observer(data)
+	const observer = (data, tm) => {
+		return new Observer(data, tm)
 	};
 
 	// 作为代理拦截
@@ -152,7 +155,7 @@
 						let exp = attr.value;
 						if (name.includes('v-')) {
 							let val = this.tm;
-							let arr = RegExp.$1.split('.');
+							let arr = exp.split('.');
 							arr.map(item => {
 								val = val[item];
 							});
@@ -198,8 +201,9 @@
 			const tm = this;
 			tm.$options = options;
 			const data = tm.data = options.data || {};
+			tm.$watch = options.watch || {};
 			// 初始化数据，拦截set与get操作
-			observer(data);
+			observer(data, tm);
 			proxy(tm, data);
 
 			// 编译模板

@@ -7,8 +7,9 @@ export const initMixin = (Tue) => {
 		const tm = this
 		tm.$options = options
 		const data = tm.data = options.data || {}
+		tm.$watch = options.watch || {}
 		// 初始化数据，拦截set与get操作
-		observer(data)
+		observer(data, tm)
 		proxy(tm, data)
 
 		// 编译模板
