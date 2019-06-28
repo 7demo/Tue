@@ -42,10 +42,9 @@
 	const defineReactive = (obj, key, val, dep, tm) => {
 		Object.defineProperty(obj, key, {
 			set(newValue) {
-				let oval = tm[key];
+				if (val == newValue) return
 				val = newValue;
 				dep.notify();
-				tm.$watch[key] && tm.$watch[key](newValue, oval);
 			},
 			get() {
 				Dep.target && dep.addSub(Dep.target);
@@ -117,6 +116,12 @@
 			this.cb(val);
 		}
 	}
+
+	const createWatch = (tm, watchs) => {
+		Object.keys(watchs).map(key => {
+			tm.$watch(key, watchs[key]);
+		});
+	};
 
 	/**
 	 * 编译模板
@@ -201,7 +206,7 @@
 			const tm = this;
 			tm.$options = options;
 			const data = tm.data = options.data || {};
-			tm.$watch = options.watch || {};
+			// tm.$watch = options.watch || {}
 			// 初始化数据，拦截set与get操作
 			observer(data, tm);
 			proxy(tm, data);
@@ -211,6 +216,12 @@
 
 			// 计算属性
 			initComputed(tm);
+
+			//监控属性
+			createWatch(tm, options.watch);
+		};
+		Tue.prototype.$watch = function(exp, cb) {
+			new Watcher(this, exp, cb);
 		};
 	};
 

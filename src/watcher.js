@@ -24,3 +24,9 @@ export class Watcher{
 		this.cb(val)
 	}
 }
+
+export const createWatch = (tm, watchs) => {
+	Object.keys(watchs).map(key => {
+		tm.$watch(key, watchs[key])
+	})
+}

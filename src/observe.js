@@ -25,10 +25,9 @@ class Observer{
 export const defineReactive = (obj, key, val, dep, tm) => {
 	Object.defineProperty(obj, key, {
 		set(newValue) {
-			let oval = tm[key]
+			if (val == newValue) return
 			val = newValue
 			dep.notify()
-			tm.$watch[key] && tm.$watch[key](newValue, oval)
 		},
 		get() {
 			Dep.target && dep.addSub(Dep.target)

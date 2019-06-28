@@ -45,8 +45,8 @@
 				msg(nv, ol) {
 					console.log('msg----> ', nv, ol)
 				},
-				obj(nv, ol) {
-					console.log('obj===> ', nv, ol)
+				'obj.a': (nv, ol) => {
+					console.log('watch obj===> ', nv, ol)
 				}
 			}
 		})
