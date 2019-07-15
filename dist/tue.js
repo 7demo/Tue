@@ -96,7 +96,7 @@
 			this.tm = tm;
 			this.exp = exp;
 			this.cb = cb;
-			this.get();
+			this.value = this.get();
 		}
 		get() {
 			Dep.target = this;
@@ -106,14 +106,17 @@
 				val = val[item];
 			});
 			Dep.target = null;
+			return val
 		}
 		update() {
 			let arr = this.exp.split('.');
+			let oldValue = this.value;
 			let val = this.tm;
 			arr.map(item => {
 				val = val[item];
 			});
-			this.cb(val);
+			this.value = val;
+			this.cb(val, oldValue);
 		}
 	}
 
@@ -221,7 +224,8 @@
 			createWatch(tm, options.watch);
 		};
 		Tue.prototype.$watch = function(exp, cb) {
-			new Watcher(this, exp, cb);
+			console.log('----watcher', exp, cb);
+			new Watcher(this, exp, cb, true);
 		};
 	};
 

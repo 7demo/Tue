@@ -23,6 +23,7 @@ export const initMixin = (Tue) => {
 		createWatch(tm, options.watch)
 	}
 	Tue.prototype.$watch = function(exp, cb) {
-		new Watcher(this, exp, cb)
+		console.log('----watcher', exp, cb)
+		new Watcher(this, exp, cb, true)
 	}
 }
