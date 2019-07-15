@@ -8,21 +8,22 @@ class Observer{
 		this.tm = tm
 		this.walk(data)
 	}
-
 	walk(data) {
 		Object.keys(data).map(key => {
 			if (typeof data[key] === 'object') {
 				this.walk(data[key])
 			}
-			defineReactive(data, key, data[key], this.dep, this.tm)
 			if (Array.isArray(data[key])) {
-				defineArrayReactive(data, key, this.dep, this.tm)
+				defineArrayReactive(data, key, this.tm)
+			} else {
+				defineReactive(data, key, data[key], this.tm)
 			}
 		})
 	}
 }
 
-export const defineReactive = (obj, key, val, dep, tm) => {
+export const defineReactive = (obj, key, val, tm, dep) => {
+	dep =  dep || new Dep()
 	Object.defineProperty(obj, key, {
 		set(newValue) {
 			if (val == newValue) return
@@ -36,9 +37,11 @@ export const defineReactive = (obj, key, val, dep, tm) => {
 	})
 }
 
-export const defineArrayReactive = (obj, key, dep, tm) => {
+export const defineArrayReactive = (obj, key, tm) => {
+	let dep =  new Dep()
 	let arrayProto = Array.prototype
-	let arrayMethods = Object.create(arrayProto);
+	let arrayMethods = Object.create(arrayProto)
+	defineReactive(obj, key, obj[key], tm, dep);
 	[
 		'push',
 		'pop'
