@@ -11,3 +11,15 @@ export class Dep {
 }
 
 Dep.target = null
+
+const targetStacks = []
+
+export pushTarget = (target) => {
+	Dep.target = target
+	targetStacks.push(target)
+}
+
+export popTarget = () => {
+	targetStacks.pop()
+	Dep.target = targetStacks[targetStacks.length - 1]
+}

@@ -1,19 +1,25 @@
-import {Dep} from './dep.js'
+import {Dep, pushTarget, popTarget} from './dep.js'
 export class Watcher{
-	constructor(tm, exp, cb) {
+	constructor(tm, exp, cb, opts) {
+		opts = opts || {}
 		this.tm = tm
 		this.exp = exp
 		this.cb = cb
-		this.value = this.get()
+		this.lazy = opts.lazy
+		if (this.lazy) {
+			this.value = undefined
+		} else {
+			this.value = this.get()
+		}
 	}
 	get() {
-		Dep.target = this
+		pushTarget(this)
 		let arr = this.exp.split('.')
 		let val = this.tm
 		arr.map(item => {
 			val = val[item]
 		})
-		Dep.target = null
+		popTarget()
 		return val
 	}
 	update() {
@@ -25,6 +31,9 @@ export class Watcher{
 		})
 		this.value = val
 		this.cb(val, oldValue)
+	},
+	evaluate() {
+		this.value = this.get()
 	}
 }
 

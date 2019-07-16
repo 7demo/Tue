@@ -17,7 +17,7 @@ export const initMixin = (Tue) => {
 		new Compile(options.el, tm)
 
 		// 计算属性
-		initComputed(tm)
+		options.computed && initComputed(tm, options.computed)
 
 		//监控属性
 		createWatch(tm, options.watch)
