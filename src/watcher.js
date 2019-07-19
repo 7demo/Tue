@@ -19,11 +19,7 @@ export class Watcher{
 		}
 	}
 	get() {
-		console.log('window1', window.targetStacks.length)
-		console.log('deps1', this.deps.length, this.newDeps.length)
 		pushTarget(this)
-		console.warn('=-读取值中11-=', window.targetStacks.length, this.exp)
-		console.log('deps12222222', this.deps.length, this.newDeps.length)
 		let val
 		if (typeof this.exp === 'function') {
 			val = this.exp.call(this.tm)
@@ -34,15 +30,8 @@ export class Watcher{
 				val = val[item]
 			})
 		}
-		console.log('window2', window.targetStacks.length)
-		console.log('deps3333', this.deps.length, this.newDeps.length)
-		console.warn('=-读取值中22-=')
 		popTarget()
-		console.log('window3', window.targetStacks.length)
-		console.log('deps144444', this.deps.length, this.newDeps.length)
 		this.cleanupDeps()
-		console.log('window4', window.targetStacks.length)
-		console.log('deps55555', this.deps.length, this.newDeps.length)
 		this.cb(val)
 		return val
 	}
@@ -75,7 +64,6 @@ export class Watcher{
 	  }
 	depend () {
 	    let i = this.deps.length
-	    console.log('dep长度--=-====', this.deps)
 	    while (i--) {
 	      this.deps[i].depend()
 	    }
@@ -98,10 +86,7 @@ export class Watcher{
 		this.cb(val, oldValue)
 	}
 	evaluate() {
-		// this.lazy = false
-		console.log('before------>')
 		this.value = this.get()
-		console.log('before aftrer------>')
 	}
 }
 

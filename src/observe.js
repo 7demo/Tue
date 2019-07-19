@@ -31,8 +31,6 @@ export const defineReactive = (obj, key, val, tm, dep) => {
 			dep.notify()
 		},
 		get() {
-			console.log('------', key, val)
-			// Dep.target && dep.addSub(Dep.target)
 			Dep.target && dep.depend()
 			return val
 		}

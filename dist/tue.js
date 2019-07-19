@@ -68,8 +68,6 @@
 				dep.notify();
 			},
 			get() {
-				console.log('------', key, val);
-				// Dep.target && dep.addSub(Dep.target)
 				Dep.target && dep.depend();
 				return val
 			}
@@ -115,11 +113,7 @@
 			}
 		}
 		get() {
-			console.log('window1', window.targetStacks.length);
-			console.log('deps1', this.deps.length, this.newDeps.length);
 			pushTarget(this);
-			console.warn('=-读取值中11-=', window.targetStacks.length, this.exp);
-			console.log('deps12222222', this.deps.length, this.newDeps.length);
 			let val;
 			if (typeof this.exp === 'function') {
 				val = this.exp.call(this.tm);
@@ -130,15 +124,8 @@
 					val = val[item];
 				});
 			}
-			console.log('window2', window.targetStacks.length);
-			console.log('deps3333', this.deps.length, this.newDeps.length);
-			console.warn('=-读取值中22-=');
 			popTarget();
-			console.log('window3', window.targetStacks.length);
-			console.log('deps144444', this.deps.length, this.newDeps.length);
 			this.cleanupDeps();
-			console.log('window4', window.targetStacks.length);
-			console.log('deps55555', this.deps.length, this.newDeps.length);
 			this.cb(val);
 			return val
 		}
@@ -171,7 +158,6 @@
 		  }
 		depend () {
 		    let i = this.deps.length;
-		    console.log('dep长度--=-====', this.deps);
 		    while (i--) {
 		      this.deps[i].depend();
 		    }
@@ -194,10 +180,7 @@
 			this.cb(val, oldValue);
 		}
 		evaluate() {
-			// this.lazy = false
-			console.log('before------>');
 			this.value = this.get();
-			console.log('before aftrer------>');
 		}
 	}
 
@@ -227,17 +210,9 @@
 				let txt = node.textContent;
 				let reg = /\{\{(.*?)\}\}/g;
 				if (node.nodeType === 3 && reg.test(txt)) {
-					// let val = this.tm
-					// let arr = RegExp.$1.split('.')
-					// arr.map(item => {
-					// 	val = val[item]
-					// })
-					// node.textContent = txt.replace(reg, val).trim()
-					console.log('创建编译watcher');
 					let watcher = new Watcher(this.tm, RegExp.$1, v => {
 						node.textContent = txt.replace(reg, v).trim();
 					});
-					console.log('创建编译watcher ater', watcher.id);
 				}
 				if (node.nodeType === 1) {
 					let attrs = node.attributes;
@@ -245,12 +220,6 @@
 						let name = attr.name;
 						let exp = attr.value;
 						if (name.includes('v-')) {
-							let val = this.tm;
-							let arr = exp.split('.');
-							arr.map(item => {
-								val = val[item];
-							});
-							node.value = val;
 							new Watcher(this.tm, exp, v => {
 								node.value = v;
 							});
@@ -277,6 +246,15 @@
 		}
 	}
 
+	// computed 理解逻辑，假设 sum是计算属性依赖msg
+	// 创建监听模板watcher sum
+	// sum watcher 默认调用get函数
+	// 把sum watcher 推入targetstact
+	// 读sum，走computed 拦截器
+	// 拦截器中sum computed watcher调用evalute计算
+	// 把sum computed watcher 推入推入targetstact
+	// 因为sum需要读取msg 所以在msg的拦截器中，把msg的dep 加入 sum computed watcher 的deps 中
+	// 此时存在存在Dep.target = msg watcher 所以把sum computed watcher的依赖（msg dep）执行遍历，把msg dep 加入的msg watcher的依赖中
 	const noop = () => {};
 	const initComputed = (tm, computeds) => {
 		for (const key in computeds) {
@@ -290,11 +268,9 @@
 			);
 			Object.defineProperty(tm, key, {
 				get() {
-					console.log('======= YYYYY开始',watcher.deps.length, watcher.id, Dep.target && Dep.target.id);
 					if (watcher.lazy) {
 						watcher.evaluate();
 					}
-					console.log('%c ======= 要增加依赖', watcher.deps.length, Dep.target && Dep.target.id);
 					// 在编译模板时，第一次只是单纯的获取值，没有Dep.target
 					// 紧接着，创建一个模板与计算属性的wather, 由于创建watcher时，会默认调用get，所以Dep.target的值为此watcher
 					if (Dep.target) {
@@ -303,17 +279,6 @@
 					return watcher.value
 				}
 			});
-			// Object.defineProperty(tm, key, () => {
-			// 	return function computedGeeter() {
-			// 		if (watcher.lazy) {
-			// 			watcher.evaluate()
-			// 		}
-			// 		if (Dep.target) {
-			// 			watcher.depend()
-			// 		}
-			// 		return watcher.value
-			// 	}
-			// })
 		}
 	};
 
