@@ -14,7 +14,7 @@ class Observer{
 				this.walk(data[key])
 			}
 			if (Array.isArray(data[key])) {
-				defineArrayReactive(data, key, this.tm)
+				// defineArrayReactive(data, key, this.tm)
 			} else {
 				defineReactive(data, key, data[key], this.tm)
 			}
@@ -31,7 +31,9 @@ export const defineReactive = (obj, key, val, tm, dep) => {
 			dep.notify()
 		},
 		get() {
-			Dep.target && dep.addSub(Dep.target)
+			console.log('------', key, val)
+			// Dep.target && dep.addSub(Dep.target)
+			Dep.target && dep.depend()
 			return val
 		}
 	})

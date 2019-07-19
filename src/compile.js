@@ -19,15 +19,17 @@ export class Compile {
 			let txt = node.textContent
 			let reg = /\{\{(.*?)\}\}/g
 			if (node.nodeType === 3 && reg.test(txt)) {
-				let val = this.tm
-				let arr = RegExp.$1.split('.')
-				arr.map(item => {
-					val = val[item]
-				})
-				node.textContent = txt.replace(reg, val).trim()
-				new Watcher(this.tm, RegExp.$1, v => {
+				// let val = this.tm
+				// let arr = RegExp.$1.split('.')
+				// arr.map(item => {
+				// 	val = val[item]
+				// })
+				// node.textContent = txt.replace(reg, val).trim()
+				console.log('创建编译watcher')
+				let watcher = new Watcher(this.tm, RegExp.$1, v => {
 					node.textContent = txt.replace(reg, v).trim()
 				})
+				console.log('创建编译watcher ater', watcher.id)
 			}
 			if (node.nodeType === 1) {
 				let attrs = node.attributes

@@ -7,47 +7,46 @@
 </head>
 <body>
 	<div id="app">
-		<input type="text" v-mode="msg">
 		{{msg}}
-		<span>
+		<!-- <div>
 			{{atr}}
-		</span>
+		</div>
 		<div>
 			{{obj.a}}
 		</div>
-		<input type="text" v-model="obj.a">
-		{{sum}}
-		<div>
-			{{arr}}
-		</div>
+		<input type="text" v-model="obj.a"> -->
+		sum: <div>{{sum}}</div>
+		<!-- <div>{{erv}}</div> -->
 	</div>
 	<script>
 		let tue = new Tue({
 			el: '#app',
 			data: {
-				msg: 'test2323',
-				atr: 'pro123',
-				arr: [
-					1,
-					2
-				],
-				obj: {
-					a: 'this is a deep'
-				}
+				msg: 'test2323'
+				// atr: 'pro123',
+				// arr: [
+				// 	1,
+				// 	2
+				// ],
+				// obj: {
+				// 	a: 'this is a deep'
+				// }
 			},
 			computed: {
 				sum() {
-					console.log('computed---->', this.msg + this.atr)
-					return this.msg + this.atr
+					return this.msg + '223'
 				}
+				// erv() {
+				// 	return this.atr + '11'
+				// }
 			},
 			watch: {
-				msg(nv, ol) {
-					console.log('msg----> ', nv, ol)
-				},
-				obj: (nv, ol) => {
-					console.log('watch obj===> ', nv, ol)
-				}
+				// msg(nv, ol) {
+				// 	console.log('msg----> ', nv, ol)
+				// },
+				// obj: (nv, ol) => {
+				// 	console.log('watch obj===> ', nv, ol)
+				// }
 			}
 		})
 	</script>
