@@ -7,6 +7,6 @@
     "dev": "rollup -w -c scripts/config.js"
   },
   "dependencies": {
-    "lodash.template": "^4.4.0"
+    "lodash.template": "^4.5.0"
   }
 }
